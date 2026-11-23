@@ -14,7 +14,7 @@ base {
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 repositories {
-    // Add additional repositories here if you need extra deps.
+    mavenCentral()
 }
 
 runs {
@@ -52,6 +52,13 @@ configurations {
 
 dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test', Test) {
+    useJUnitPlatform()
 }
 
 tasks.withType(ProcessResources).configureEach {
@@ -64,6 +71,7 @@ tasks.withType(ProcessResources).configureEach {
             mod_name                : mod_name,
             mod_license             : mod_license,
             mod_version             : mod_version,
+            mod_authors             : mod_authors,
     ]
     inputs.properties replaceProperties
 
@@ -85,6 +93,14 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+}
+
+tasks.named('compileJava', JavaCompile) {
+    options.compilerArgs += ['-Xlint:all', '-Xlint:-processing', '-Werror']
+}
+
+tasks.named('compileTestJava', JavaCompile) {
+    options.compilerArgs += ['-Xlint:all', '-Xlint:-processing', '-Werror']
 }
 
 idea {
